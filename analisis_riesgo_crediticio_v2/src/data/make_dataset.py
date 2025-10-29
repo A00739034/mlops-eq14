@@ -3,6 +3,12 @@ import click
 import logging
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
+import sys
+
+# Agregar el directorio padre al path para importar data_processor
+sys.path.append(str(Path(__file__).parent))
+
+from data_processor import DataProcessor, DataConfig
 
 
 @click.command()
@@ -14,6 +20,14 @@ def main(input_filepath, output_filepath):
     """
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
+    
+    # Crear procesador de datos
+    processor = DataProcessor()
+    
+    # Ejecutar pipeline de procesamiento
+    result = processor.process_pipeline(input_filepath, output_filepath)
+    
+    logger.info(f"Data processing completed: {result['output_shape']}")
 
 
 if __name__ == '__main__':
