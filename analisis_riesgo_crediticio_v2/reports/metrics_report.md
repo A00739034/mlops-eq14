@@ -1,7 +1,7 @@
 # Reporte de Métrica y Selección de Modelo
 **Proyecto:** Predicción de Riesgo Crediticio
 **Fecha:** 30 de octubre de 2025
-**Autor(a):** Lucero Aponte Pérez
+**Autor(a):** Lucero Contreras
 
 ---
 
