@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/manuelambriz/Documents/MaestriaIa/MLops/MLOps/mlops-eq14/analisis_riesgo_crediticio_v2/mlruns/966627952869285544/d415bfbdd54945bb96b6c80a4638ca57/artifacts
+end_time: 1762110539975
+entry_point_name: ''
+experiment_id: '966627952869285544'
+lifecycle_stage: active
+run_id: d415bfbdd54945bb96b6c80a4638ca57
+run_name: LogisticRegression
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762110537746
+status: 3
+tags: []
+user_id: manuelambriz

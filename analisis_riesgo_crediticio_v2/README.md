@@ -3,6 +3,34 @@ Analisis Riesgo Crediticio V2
 
 Analisis de riesgo crediticio del equipo 14 de la materia de MLOPS Fase 2
 
+## 🚀 Inicio Rápido
+
+### Instalación
+
+```bash
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Configurar DVC con S3
+python setup_dvc_s3.py
+
+# Descargar datos desde S3 (si ya están versionados)
+dvc pull
+```
+
+### Versionado de Datos con DVC
+
+Este proyecto utiliza **DVC (Data Version Control)** para versionar datos grandes y modelos, almacenándolos en **Amazon S3**.
+
+- **Documentación completa**: Ver [DVC_S3_SETUP.md](DVC_S3_SETUP.md)
+- **Configuración rápida**: Ejecutar `python setup_dvc_s3.py`
+
+**Comandos principales:**
+- `dvc add <archivo>` - Agregar archivo a DVC
+- `dvc push` - Subir datos a S3
+- `dvc pull` - Descargar datos desde S3
+- `dvc status` - Ver estado de los archivos
+
 Project Organization
 ------------
 

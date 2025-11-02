@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/manuelambriz/Documents/MaestriaIa/MLops/MLOps/mlops-eq14/analisis_riesgo_crediticio_v2/mlruns/966627952869285544/7532ec6bfd3448579889d04d9f5ccab2/artifacts
+end_time: 1762110583823
+entry_point_name: ''
+experiment_id: '966627952869285544'
+lifecycle_stage: active
+run_id: 7532ec6bfd3448579889d04d9f5ccab2
+run_name: SVM
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762110581723
+status: 3
+tags: []
+user_id: manuelambriz

@@ -77,6 +77,14 @@ target/
 
 # exclude data from source control by default
 /data/
+!/data/.gitkeep
+
+# DVC
+.dvc/
+.dvcignore
+*.dvc
+dvc.lock
+.dvc/tmp/
 
 # Mac OS-specific storage files
 .DS_Store
