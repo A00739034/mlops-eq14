@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/manuelambriz/Documents/MaestriaIa/MLops/MLOps/mlops-eq14/analisis_riesgo_crediticio_v2/mlruns/966627952869285544/30ac98f234634a018e8e72849aecc09f/artifacts
+end_time: 1762110544368
+entry_point_name: ''
+experiment_id: '966627952869285544'
+lifecycle_stage: active
+run_id: 30ac98f234634a018e8e72849aecc09f
+run_name: RandomForest
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762110542706
+status: 3
+tags: []
+user_id: manuelambriz

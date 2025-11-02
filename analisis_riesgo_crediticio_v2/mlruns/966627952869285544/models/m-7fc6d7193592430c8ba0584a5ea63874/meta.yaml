@@ -1,0 +1,10 @@
+artifact_location: file:///Users/manuelambriz/Documents/MaestriaIa/MLops/MLOps/mlops-eq14/analisis_riesgo_crediticio_v2/mlruns/966627952869285544/models/m-7fc6d7193592430c8ba0584a5ea63874/artifacts
+creation_timestamp: 1762110574896
+experiment_id: '966627952869285544'
+last_updated_timestamp: 1762110576889
+model_id: m-7fc6d7193592430c8ba0584a5ea63874
+model_type: null
+name: model
+source_run_id: d2f0f33c76cc4d989940bfbdd76e2e6f
+status: 2
+status_message: null

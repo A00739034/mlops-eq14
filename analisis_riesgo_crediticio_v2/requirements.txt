@@ -30,6 +30,7 @@ plotly>=5.11.0
 
 # Model Versioning and Experiment Tracking
 mlflow>=2.0.0
+dvc[s3]>=3.55.0  # Data Version Control with S3 support
 
 # Testing
 pytest>=7.0.0
