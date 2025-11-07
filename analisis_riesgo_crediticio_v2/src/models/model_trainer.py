@@ -448,13 +448,21 @@ class ModelTrainer:
                     mlflow.log_metric(f"cv_{metric}_mean", np.mean(scores))
                     mlflow.log_metric(f"cv_{metric}_std", np.std(scores))
                 
-                # Log modelo
-                signature = infer_signature(X_test, model.predict(X_test))
+                # === Firma + ejemplo de entrada ===
+                input_example = X_test.head(3)
+                if hasattr(model, "predict_proba"):
+                    y_hat = model.predict_proba(X_test)[:, 1]
+                else:
+                    # Fallback raro: si algún modelo no tiene predict_proba
+                    y_hat = model.predict(X_test)
+                signature = infer_signature(input_example, y_hat)
+
+                # === Log de modelo con MLflow (usar name= en lugar de artifact_path) ===
                 mlflow.sklearn.log_model(
-                    model,
-                    "model",
-                    signature=signature,
-                    input_example=X_test.head(1)
+                    sk_model=model,
+                    name="model",
+                    input_example=input_example,
+                    signature=signature
                 )
                 
         except Exception as e:

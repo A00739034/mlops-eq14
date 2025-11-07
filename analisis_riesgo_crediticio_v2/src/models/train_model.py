@@ -1,5 +1,7 @@
 import mlflow
 import mlflow.sklearn
+from mlflow.models import infer_signature
+
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -27,8 +29,8 @@ def evaluate_and_log(model, name, params=None):
     with mlflow.start_run(run_name=name):
         mlflow.log_param("model_name", name)
         if params:
-            for k,v in params.items():
-                mlflow.log_param(k,v)
+            mlflow.log_params(params)
+
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
         y_prob = model.predict_proba(X_test)[:,1]
@@ -41,7 +43,16 @@ def evaluate_and_log(model, name, params=None):
         mlflow.log_metric("roc_auc", roc_auc)
         mlflow.log_metric("f1_score", f1)
 
-        mlflow.sklearn.log_model(model, "model")
+        # ===== NUEVO: Signature e input_example =====
+        input_example = X_test.head(3)
+        signature = infer_signature(input_example, y_prob)
+
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            name="model",
+            input_example=input_example,
+            signature=signature
+        )
 
         print(f"{name}: PR-AUC={pr_auc:.3f}, ROC-AUC={roc_auc:.3f}, F1={f1:.3f}")
 
