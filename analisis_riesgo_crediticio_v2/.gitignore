@@ -95,3 +95,17 @@ dvc.lock
 
 # Mypy cache
 .mypy_cache/
+# MacOS basura
+.DS_Store
+
+# DVC / data no versionada directamente
+src/data/raw/
+src/data/processed/
+
+# MLflow tracking local
+mlruns/
+
+# Python cache
+__pycache__/
+
+
