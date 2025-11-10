@@ -50,6 +50,14 @@ coverage.xml
 # Django stuff:
 *.log
 
+# API and Docker
+api/__pycache__/
+*.pyc
+logs/
+
+# Docker
+.dockerignore
+
 # Sphinx documentation
 docs/_build/
 
