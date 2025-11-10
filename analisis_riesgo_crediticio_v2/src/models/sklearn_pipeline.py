@@ -546,13 +546,20 @@ class SklearnPipelineManager:
                     for metric, value in test_metrics.items():
                         mlflow.log_metric(f"test_{metric}", value)
                     
-                    # Log modelo
-                    signature = infer_signature(X_test, self.predict(X_test))
+                    # === NUEVO: firma e input_example consistentes con producción ===
+                    input_example = X_test.head(3)
+                    try:
+                        y_hat = self.predict_proba(X_test)[:, 1]
+                    except Exception:
+                        y_hat = self.predict(X_test)
+                    signature = infer_signature(input_example, y_hat)
+
+                    # === Log del modelo usando name= (no artifact_path) ===
                     mlflow.sklearn.log_model(
-                        self.pipeline,
-                        "model",
-                        signature=signature,
-                        input_example=X_test.head(1)
+                        sk_model=self.pipeline,
+                        name="model",
+                        input_example=input_example,
+                        signature=signature
                     )
                     
                     self.logger.info("Modelo loggeado en MLflow")

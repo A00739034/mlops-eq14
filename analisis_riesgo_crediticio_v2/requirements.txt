@@ -46,3 +46,12 @@ loguru>=0.6.0
 # Configuration Management
 pydantic>=1.10.0
 pyyaml>=6.0
+
+scikit-learn==1.6.1
+mlflow>=2.14.0
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.9
+joblib>=1.4
+pandas>=2.2
+numpy>=1.26
