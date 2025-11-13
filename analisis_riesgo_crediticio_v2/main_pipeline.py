@@ -20,6 +20,9 @@ import os
 # Agregar el directorio src al path para importar módulos
 sys.path.append(str(Path(__file__).parent / "src"))
 
+# Importar módulo de reproducibilidad PRIMERO para configurar semillas
+from utils.reproducibility import set_seed, DEFAULT_RANDOM_SEED, ReproducibilityContext
+
 from data.data_processor import DataProcessor, DataConfig
 from features.feature_engineer import FeatureEngineer, FeatureConfig
 from models.model_trainer import ModelTrainer, ModelConfig
@@ -44,6 +47,17 @@ class MLPipeline:
         """
         self.config = config or self._get_default_config()
         self.logger = logging.getLogger(__name__)
+        
+        # Configurar semillas aleatorias para reproducibilidad
+        # Obtener la semilla de la configuración o usar la por defecto
+        random_state = (
+            self.config.get('models', {}).get('random_state') or
+            self.config.get('features', {}).get('random_state') or
+            self.config.get('data', {}).get('random_state') or
+            DEFAULT_RANDOM_SEED
+        )
+        set_seed(random_state, verbose=False)
+        self.logger.info(f"Semillas aleatorias configuradas a: {random_state}")
         
         # Inicializar componentes
         self.data_processor = DataProcessor(DataConfig(**self.config.get('data', {})))
