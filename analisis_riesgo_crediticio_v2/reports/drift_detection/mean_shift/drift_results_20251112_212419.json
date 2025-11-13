@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-11-12T21:24:19.337985",
+  "drift_type": "mean_shift",
+  "statistical_drift": {
+    "continuous_drift": {},
+    "categorical_drift": {},
+    "overall_drift_detected": false,
+    "drift_severity": "none",
+    "drift_ratio": 0.0
+  },
+  "performance_comparison": {
+    "reference_metrics": {
+      "accuracy": 0.8272357723577236,
+      "precision": 0.8290584778241668,
+      "recall": 0.8272357723577236,
+      "f1": 0.8140958929957172,
+      "roc_auc": 0.9049445281468292,
+      "average_precision": 0.8303077532965463
+    },
+    "current_metrics": {
+      "accuracy": 0.8475609756097561,
+      "precision": 0.8458858655785806,
+      "recall": 0.8475609756097561,
+      "f1": 0.8406564942742002,
+      "roc_auc": 0.9135930498757509,
+      "average_precision": 0.8424414394668579
+    },
+    "differences": {
+      "accuracy": 0.020325203252032464,
+      "precision": 0.016827387754413836,
+      "recall": 0.020325203252032464,
+      "f1": 0.02656060127848303,
+      "roc_auc": 0.00864852172892161,
+      "average_precision": 0.01213368617031163
+    },
+    "relative_changes": {
+      "accuracy": 2.4570024570024502,
+      "precision": 2.0296985320717895,
+      "recall": 2.4570024570024502,
+      "f1": 3.262588781862675,
+      "roc_auc": 0.9556963393803037,
+      "average_precision": 1.4613480510253718
+    },
+    "alerts": [],
+    "alert_count": 0,
+    "has_alerts": false
+  },
+  "reference_data_shape": [
+    492,
+    15
+  ],
+  "drift_data_shape": [
+    492,
+    15
+  ],
+  "summary": {
+    "drift_detected": false,
+    "drift_severity": "none",
+    "performance_degradation": false,
+    "alert_count": 0
+  }
+}
