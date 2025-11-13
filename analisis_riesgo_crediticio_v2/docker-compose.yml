@@ -1,21 +1,71 @@
 version: '3.8'
 
 services:
+  # Servicio principal: Pipeline de reproducibilidad
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: riesgo_crediticio_pipeline
+    image: riesgo-crediticio:latest
+    volumes:
+      # Montar datos de entrada (solo lectura para reproducibilidad)
+      - ./data:/app/data:ro
+      # Montar directorio de modelos (lectura/escritura)
+      - ./models:/app/models
+      # Montar directorio de reports (lectura/escritura)
+      - ./reports:/app/reports
+      # Montar logs
+      - ./logs:/app/logs
+    environment:
+      - PYTHONHASHSEED=42
+      - RANDOM_SEED=42
+      - LOG_LEVEL=INFO
+    command: python run_reproducibility_test.py --seed 42 --verbose
+    restart: "no"  # No reiniciar automáticamente, solo ejecutar una vez
+
+  # Servicio para ejecutar API (opcional)
   api:
-    build: .
-    container_name: credit_risk_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: riesgo_crediticio_api
+    image: riesgo-crediticio:latest
     ports:
       - "8000:8000"
     volumes:
-      - ./models:/app/models
+      - ./models:/app/models:ro  # Solo lectura para API
       - ./api:/app/api
+      - ./logs:/app/logs
     environment:
       - MODEL_PATH=/app/models/best_model.joblib
       - LOG_LEVEL=info
+      - PYTHONHASHSEED=42
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
     restart: unless-stopped
+    # No depende del pipeline - la API puede ejecutarse independientemente
+    profiles:
+      - api  # Solo se ejecuta con: docker-compose --profile api up
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  # Servicio para comparación de resultados (opcional)
+  compare:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: riesgo_crediticio_compare
+    image: riesgo-crediticio:latest
+    volumes:
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+    environment:
+      - PYTHONHASHSEED=42
+    command: python compare_reproducibility_results.py --reference reports/reproducibility/reference_metrics.json --current reports/reproducibility/new_run/reference_metrics.json --output reports/reproducibility/comparison_report.md --verbose
+    profiles:
+      - compare  # Solo se ejecuta con: docker-compose --profile compare up
+    restart: "no"
