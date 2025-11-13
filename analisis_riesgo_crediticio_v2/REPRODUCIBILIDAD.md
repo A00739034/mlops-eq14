@@ -35,6 +35,12 @@ Este proyecto implementa:
 
 ### Software Necesario
 
+**Opción A: Docker (Recomendado - Solo requiere Docker)**
+- **Docker** versión 20.10 o superior
+- **Docker Compose** versión 1.29 o superior (opcional pero recomendado)
+- **Git** (para clonar el repositorio)
+
+**Opción B: Entorno Local**
 - **Python 3.11** (versión exacta recomendada para máxima reproducibilidad)
 - **Git** (para clonar el repositorio)
 - **DVC** (para versionado de datos)
@@ -73,17 +79,49 @@ pip install -r requirements.txt
 python -c "import pandas, numpy, sklearn; print('✓ Dependencias instaladas correctamente')"
 ```
 
-### Opción 2: Docker (Máxima Reproducibilidad)
+### Opción 2: Docker (Máxima Reproducibilidad) - RECOMENDADO
+
+**Ventajas:**
+- ✅ Solo requiere Docker instalado (no Python ni dependencias)
+- ✅ Reproducibilidad 100% garantizada
+- ✅ Funciona en cualquier sistema operativo
+- ✅ Entorno completamente aislado
+
+**Pasos rápidos:**
 
 ```bash
 # 1. Construir imagen Docker
+./docker_build.sh
+# O manualmente: docker build -t riesgo-crediticio:latest .
+
+# 2. Ejecutar pipeline con Docker
+./docker_run_reproducibility.sh --seed 42 --verbose
+
+# 3. Ver resultados
+ls -la reports/reproducibility/docker_run/
+```
+
+**Documentación completa:** Ver `DOCKER_README.md` para instrucciones detalladas y ejemplos.
+
+**Comandos Docker directos:**
+
+```bash
+# Construir imagen
 docker build -t riesgo-crediticio:reproducible .
 
-# 2. Ejecutar contenedor
-docker run -it --rm \
-  -v $(pwd):/app \
-  -v $(pwd)/data:/app/data \
+# Ejecutar pipeline
+docker run --rm \
+  -v $(pwd)/data:/app/data:ro \
   -v $(pwd)/models:/app/models \
+  -v $(pwd)/reports:/app/reports \
+  riesgo-crediticio:reproducible \
+  python run_reproducibility_test.py --seed 42
+
+# Ejecutar interactivo (para debugging)
+docker run -it --rm \
+  -v $(pwd)/data:/app/data:ro \
+  -v $(pwd)/models:/app/models \
+  -v $(pwd)/reports:/app/reports \
   riesgo-crediticio:reproducible bash
 ```
 
@@ -315,24 +353,35 @@ python compare_reproducibility_results.py \
 # 7. Verificar que el resultado sea "REPRODUCIBLE"
 ```
 
-#### En Contenedor Docker
+#### En Contenedor Docker (Recomendado)
 
 ```bash
 # 1. Construir imagen
-docker build -t riesgo-crediticio:test .
+./docker_build.sh
+# O: docker build -t riesgo-crediticio:test .
 
 # 2. Ejecutar pipeline en contenedor
-docker run --rm \
-  -v $(pwd):/app \
-  -v $(pwd)/data:/app/data \
-  riesgo-crediticio:test \
-  python run_reproducibility_test.py --seed 42
+./docker_run_reproducibility.sh --seed 42 --verbose
 
-# 3. Comparar resultados
-python compare_reproducibility_results.py \
+# 3. Comparar resultados automáticamente
+./docker_run_reproducibility.sh --seed 42 --compare
+
+# O manualmente:
+docker run --rm \
+  -v $(pwd)/reports:/app/reports \
+  riesgo-crediticio:test \
+  python compare_reproducibility_results.py \
     --reference reports/reproducibility/reference_metrics.json \
-    --current reports/reproducibility/reference_metrics.json
+    --current reports/reproducibility/docker_run/reference_metrics.json \
+    --output reports/reproducibility/comparison_report_docker.md
 ```
+
+**Ventajas de Docker:**
+- ✅ No requiere Python ni dependencias instaladas localmente
+- ✅ Entorno idéntico garantizado
+- ✅ Funciona en cualquier sistema con Docker
+
+**Ver documentación completa:** `DOCKER_README.md`
 
 ### Checklist de Verificación
 

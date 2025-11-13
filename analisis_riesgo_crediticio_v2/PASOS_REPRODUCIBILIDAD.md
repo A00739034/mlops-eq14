@@ -54,7 +54,26 @@ dvc push  # Si está configurado S3
 
 ### Paso 1: Preparar Entorno Limpio
 
-#### Opción A: Máquina/VM Nueva
+#### Opción A: Docker (Recomendado - Solo Requiere Docker)
+
+```bash
+# 1. Clonar repositorio
+git clone <repository-url>
+cd analisis_riesgo_crediticio_v2
+
+# 2. Construir imagen Docker (solo requiere Docker instalado)
+./docker_build.sh
+
+# 3. Ejecutar pipeline con Docker
+./docker_run_reproducibility.sh --seed 42 --verbose
+
+# 4. Comparar resultados
+./docker_run_reproducibility.sh --seed 42 --compare
+```
+
+**Ver documentación completa:** `DOCKER_README.md`
+
+#### Opción B: Máquina/VM Nueva
 
 ```bash
 # 1. Clonar repositorio
