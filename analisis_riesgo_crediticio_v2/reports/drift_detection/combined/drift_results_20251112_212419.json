@@ -1,0 +1,70 @@
+{
+  "timestamp": "2025-11-12T21:24:19.367843",
+  "drift_type": "combined",
+  "statistical_drift": {
+    "continuous_drift": {},
+    "categorical_drift": {},
+    "overall_drift_detected": false,
+    "drift_severity": "none",
+    "drift_ratio": 0.0
+  },
+  "performance_comparison": {
+    "reference_metrics": {
+      "accuracy": 0.8272357723577236,
+      "precision": 0.8290584778241668,
+      "recall": 0.8272357723577236,
+      "f1": 0.8140958929957172,
+      "roc_auc": 0.9049445281468292,
+      "average_precision": 0.8303077532965463
+    },
+    "current_metrics": {
+      "accuracy": 0.8252032520325203,
+      "precision": 0.821842081632371,
+      "recall": 0.8252032520325203,
+      "f1": 0.8159066701844903,
+      "roc_auc": 0.8503042636038116,
+      "average_precision": 0.7804667836416306
+    },
+    "differences": {
+      "accuracy": -0.002032520325203291,
+      "precision": -0.007216396191795704,
+      "recall": -0.002032520325203291,
+      "f1": 0.001810777188773094,
+      "roc_auc": -0.054640264543017625,
+      "average_precision": -0.04984096965491569
+    },
+    "relative_changes": {
+      "accuracy": -0.24570024570025037,
+      "precision": -0.870432711904095,
+      "recall": -0.24570024570025037,
+      "f1": 0.222427997039732,
+      "roc_auc": -6.037968388505701,
+      "average_precision": -6.002710375404007
+    },
+    "alerts": [
+      {
+        "metric": "roc_auc",
+        "severity": "medium",
+        "message": "ROC-AUC cambi\u00f3 -6.04% (umbral: 5.0%)",
+        "reference": 0.9049445281468292,
+        "current": 0.8503042636038116
+      }
+    ],
+    "alert_count": 1,
+    "has_alerts": true
+  },
+  "reference_data_shape": [
+    492,
+    15
+  ],
+  "drift_data_shape": [
+    492,
+    15
+  ],
+  "summary": {
+    "drift_detected": false,
+    "drift_severity": "none",
+    "performance_degradation": true,
+    "alert_count": 1
+  }
+}
