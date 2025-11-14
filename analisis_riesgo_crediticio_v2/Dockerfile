@@ -15,15 +15,17 @@ LABEL version="1.0"
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONHASHSEED=42 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_CACHE_DIR=/root/.cache/pip
 
 # Establecer directorio de trabajo
 WORKDIR /app
 
-# Instalar dependencias del sistema necesarias
+# Instalar dependencias del sistema necesarias (mínimas para compilación)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
+    gcc \
+    g++ \
+    make \
     curl \
     git \
     && rm -rf /var/lib/apt/lists/*
@@ -35,13 +37,17 @@ RUN pip install --upgrade pip setuptools wheel
 COPY requirements.txt .
 
 # Instalar dependencias de Python (versiones exactas para reproducibilidad)
-RUN pip install --no-cache-dir -r requirements.txt
+# Usar cache para acelerar builds subsecuentes
+RUN pip install -r requirements.txt
 
 # Verificar instalación de dependencias clave
 RUN python -c "import pandas; import numpy; import sklearn; print('✓ Dependencias instaladas correctamente')"
 
 # Copiar código de la aplicación
 COPY . .
+
+# Instalar paquete local en modo editable
+RUN pip install -e .
 
 # Crear directorios necesarios
 RUN mkdir -p /app/data/raw \

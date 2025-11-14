@@ -9,7 +9,15 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from dotenv import load_dotenv
+# Intentar importar dotenv; si no existe, continuar sin detener la ejecución
+try:
+    from dotenv import load_dotenv
+except ModuleNotFoundError:
+    import subprocess
+    import sys
+    print("⚠️  python-dotenv no está instalado. Instalando automáticamente...")
+    subprocess.run([sys.executable, "-m", "pip", "install", "python-dotenv"], check=True)
+    from dotenv import load_dotenv
 
 
 def run_command(cmd, check=True):
@@ -97,8 +105,34 @@ def main():
     print(f"\n📊 Configuración:")
     print(f"   Remote URL: {s3_url}")
     print(f"   Region: {aws_region}")
-    
-    print("\n📝 Próximos pasos:")
+
+    # Auto‑pull si las carpetas están vacías
+    print("\n🔍 Verificando si las carpetas de datos/modelos están vacías...")
+
+    dirs_to_check = [
+        Path("data/raw"),
+        Path("data/processed"),
+        Path("models")
+    ]
+
+    need_pull = False
+
+    for d in dirs_to_check:
+        if d.exists() and d.is_dir():
+            if not any(d.iterdir()):
+                print(f"  La carpeta '{d}' está vacía.")
+                need_pull = True
+        else:
+            print(f"  La carpeta '{d}' no existe o no es un directorio.")
+
+    if need_pull:
+        print("\n Carpetas vacías detectadas. Ejecutando 'dvc pull' automáticamente...\n")
+        run_command(["dvc", "pull"])
+        print("\n Archivos descargados exitosamente desde S3!\n")
+    else:
+        print(" Las carpetas contienen archivos. No es necesario ejecutar 'dvc pull'.\n")
+
+    print("\n Próximos pasos:")
     print("   1. Agregar datos a DVC:")
     print("      dvc add data/raw/german_credit_modified.csv")
     print("      dvc add data/processed/")

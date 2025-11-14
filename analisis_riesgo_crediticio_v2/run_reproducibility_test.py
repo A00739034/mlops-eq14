@@ -21,6 +21,7 @@ import sys
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any
+import numpy as np
 
 # Agregar src al path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
@@ -108,6 +109,18 @@ def extract_metrics_from_results(results: Dict[str, Any]) -> Dict[str, Any]:
     
     return metrics
 
+def to_native(obj):
+    if isinstance(obj, (np.integer,)):
+        return int(obj)
+    if isinstance(obj, (np.floating,)):
+        return float(obj)
+    if isinstance(obj, np.ndarray):
+        return [to_native(v) for v in obj.tolist()]
+    if isinstance(obj, dict):
+        return {k: to_native(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [to_native(v) for v in obj]
+    return obj
 
 def save_reference_metrics(metrics: Dict[str, Any], output_path: Path) -> None:
     """
@@ -120,7 +133,8 @@ def save_reference_metrics(metrics: Dict[str, Any], output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     
     with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(metrics, f, indent=2, ensure_ascii=False)
+        metrics_clean = to_native(metrics)
+        json.dump(metrics_clean, f, indent=2, ensure_ascii=False)
     
     logging.info(f"Métricas de referencia guardadas en: {output_path}")
 

@@ -129,6 +129,69 @@ if ! docker images | grep -q "^$IMAGE_NAME"; then
     echo ""
 fi
 
+# Verificar si DVC está configurado y preparar descarga de datos
+DVC_ENV_ARGS=""
+DVC_VOLUME_ARGS=""
+DVC_PULL_CMD=""
+
+if [ -d ".dvc" ]; then
+    echo -e "${YELLOW}DVC detectado. Preparando descarga de datos desde S3...${NC}"
+    
+    # Montar directorio .dvc y archivos .dvc para que el contenedor tenga acceso a la configuración
+    DVC_VOLUME_ARGS="-v $(pwd)/.dvc:/app/.dvc"
+    
+    # Montar archivos .dvc individuales si existen
+    for dvc_file in $(find . -maxdepth 1 -name "*.dvc" -type f 2>/dev/null); do
+        DVC_VOLUME_ARGS="$DVC_VOLUME_ARGS -v $(pwd)/$(basename $dvc_file):/app/$(basename $dvc_file)"
+    done
+    
+    # Montar .dvcignore si existe
+    if [ -f ".dvcignore" ]; then
+        DVC_VOLUME_ARGS="$DVC_VOLUME_ARGS -v $(pwd)/.dvcignore:/app/.dvcignore"
+    fi
+    
+    # Pasar variables de entorno de AWS si existen
+    if [ -f ".env" ]; then
+        echo -e "${YELLOW}  Cargando variables de entorno desde .env...${NC}"
+
+        while IFS='=' read -r key value; do
+            # Saltar líneas vacías o comentadas
+            if [[ -z "$key" || "$key" =~ ^# ]]; then
+                continue
+            fi
+
+            # Solo cargar variables relacionadas con AWS o S3
+            if [[ "$key" =~ ^AWS_ || "$key" =~ ^S3_ ]]; then
+                # Remover posibles caracteres CRLF
+                clean_value=$(echo "$value" | tr -d '\r')
+                export "$key=$clean_value"
+            fi
+        done < .env
+    fi
+    
+    # Pasar variables de entorno de AWS al contenedor
+    if [ ! -z "$AWS_ACCESS_KEY_ID" ]; then
+        DVC_ENV_ARGS="$DVC_ENV_ARGS -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
+    fi
+    if [ ! -z "$AWS_SECRET_ACCESS_KEY" ]; then
+        DVC_ENV_ARGS="$DVC_ENV_ARGS -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
+    fi
+    if [ ! -z "$AWS_DEFAULT_REGION" ]; then
+        DVC_ENV_ARGS="$DVC_ENV_ARGS -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION"
+    fi
+    if [ ! -z "$AWS_REGION" ]; then
+        DVC_ENV_ARGS="$DVC_ENV_ARGS -e AWS_REGION=$AWS_REGION"
+    fi
+    
+    # Comando para descargar datos con DVC
+    DVC_PULL_CMD="cd /app && echo 'Descargando datos desde DVC...' && dvc pull && echo '✓ Datos descargados exitosamente' && "
+    echo -e "${GREEN}  ✓ DVC configurado. Los datos se descargarán automáticamente.${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠ DVC no detectado. Asegúrate de que los datos estén en $DATA_DIR/raw/${NC}"
+    echo ""
+fi
+
 # Ejecutar pipeline
 echo -e "${BLUE}Ejecutando pipeline con semilla: $SEED${NC}"
 echo ""
@@ -142,12 +205,14 @@ docker run --rm \
     --name "$CONTAINER_NAME" \
     -e PYTHONHASHSEED="$SEED" \
     -e RANDOM_SEED="$SEED" \
-    -v "$(pwd)/$DATA_DIR:/app/data:ro" \
+    $DVC_ENV_ARGS \
+    -v "$(pwd)/$DATA_DIR:/app/data" \
     -v "$(pwd)/$MODELS_DIR:/app/models" \
     -v "$(pwd)/$REPORTS_DIR:/app/reports" \
     -v "$(pwd)/$LOGS_DIR:/app/logs" \
+    $DVC_VOLUME_ARGS \
     "$IMAGE_NAME:latest" \
-    python run_reproducibility_test.py --seed "$SEED" --output-dir reports/reproducibility/docker_run $VERBOSE_FLAG
+    bash -c "$DVC_PULL_CMD python run_reproducibility_test.py --seed $SEED --output-dir reports/reproducibility/docker_run $VERBOSE_FLAG"
 
 EXIT_CODE=$?
 
